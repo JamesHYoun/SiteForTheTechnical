@@ -17,13 +17,49 @@
             <input type="text" name="content">
             <button type="submit">Submit</button>
         </form>
-        <% for (let i = 0; i < items.length; i++) { %>
-            <h2>Title:</h2>
-            <%= items[i].title %><br>
-            <h2>Author:</h2>
-            <%= items[i].author %><br>
-            <h2>Content:</h2>
-            <%= items[i].content %><br>
-        <% } %>
+        <div id="blog-list">
+            <% for (let i=0; i < blogs.length; i++) { %>
+                <h2>Title:</h2>
+                <%= blogs[i].title %><br>
+                    <h2>Author:</h2>
+                    <%= blogs[i].author %><br>
+                        <h2>Content:</h2>
+                        <%= blogs[i].content %><br>
+                            <% } %>
+        </div>
+
     </body>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+    <script>
+        // Connect to the Socket.IO server
+        const socket = io('http://localhost:3000')
+        console.log(socket)
+        socket.on('NewBlog', (blog) => {
+            const blogList = document.getElementById('blog-list')
+            blogList.innerHTML +=
+            `
+                <h2>Title:</h2>
+                ${blog.title}<br>
+                <h2>Author:</h2>
+                ${blog.author}<br>                
+                <h2>Content:</h2>
+                ${blog.content}<br>
+            `
+            socket.emit('NewBlogResponse', 'Successful')
+        })
+
+        // // Handle 'welcome' event from the server
+        // socket.on('welcome', (message) => {
+        //     console.log(message);
+        //     document.getElementById('messages').innerHTML += `<p>${message}</p>`;
+        // });
+
+        // // Handle 'update' event from the server
+        // socket.on('update', (data) => {
+        //     document.getElementById('messages').innerHTML += `<p>Update: ${data.timestamp}</p>`;
+        // });
+
+        // // Send a message to the server
+        // socket.emit('clientMessage', { content: 'Hello, server!' });
+    </script>
 </html>
