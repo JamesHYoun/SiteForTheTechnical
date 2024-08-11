@@ -1,0 +1,132 @@
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #1e1e1e; /* Dark background */
+    color: #dcdcdc; /* Light text color for readability */
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+a {
+    color: #1e90ff; /* Bright color for links */
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+header, footer {
+    background-color: #333; /* Slightly lighter background for headers/footers */
+    color: #dcdcdc;
+    padding: 1rem;
+    text-align: center;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+/* Article Styles */
+article {
+    background-color: #2c2c2c; /* Slightly lighter background for articles */
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+h1, h2, h3, h4 {
+    color: #f1f1f1; /* Light color for headings */
+    margin-bottom: 1rem;
+}
+
+h1 {
+    font-size: 2rem;
+}
+
+h2 {
+    font-size: 1.75rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+/* Code Blocks */
+pre, code {
+    background-color: #2c2c2c; /* Consistent with article background */
+    color: #f8f8f2; /* Light color for code */
+    border: 1px solid #444; /* Slight border for code blocks */
+    padding: 0.5rem;
+    border-radius: 4px;
+}
+
+pre {
+    overflow-x: auto;
+    padding: 1rem;
+}
+
+code {
+    font-size: 0.9rem;
+    padding: 0.2rem 0.4rem;
+}
+
+/* Lists */
+ul, ol {
+    padding-left: 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+/* Blockquotes */
+blockquote {
+    border-left: 4px solid #1e90ff;
+    padding: 1rem;
+    margin: 1rem 0;
+    background-color: #2c2c2c;
+}
+
+blockquote p {
+    margin: 0;
+    font-style: italic;
+}
+
+/* Forms */
+input, textarea, select {
+    background-color: #333;
+    color: #dcdcdc;
+    border: 1px solid #444;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+input:focus, textarea:focus, select:focus {
+    border-color: #1e90ff;
+    outline: none;
+}
+
+/* Buttons */
+button {
+    background-color: #1e90ff;
+    color: #fff;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1c86ee;
+}

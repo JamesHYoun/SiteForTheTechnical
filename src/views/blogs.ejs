@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Site for Technical Minds</title>
+        <link rel="stylesheet" type="text/css" href="/styles/styles.css" />
+    </head>
+    <body>
+        <h1>Blogs</h1>
+        <form action="/blogs" method="POST">
+            <label for="title:">Title:</label>
+            <input type="text" name="title">
+            <label for="author:">Author:</label>
+            <input type="text" name="author">
+            <label for="content:">Content:</label>
+            <input type="text" name="content">
+            <button type="submit">Submit</button>
+        </form>
+        <% for (let i = 0; i < items.length; i++) { %>
+            <h2>Title:</h2>
+            <%= items[i].title %><br>
+            <h2>Author:</h2>
+            <%= items[i].author %><br>
+            <h2>Content:</h2>
+            <%= items[i].content %><br>
+        <% } %>
+    </body>
+</html>
