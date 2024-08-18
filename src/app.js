@@ -6,14 +6,19 @@ const app = express()
 
 const http = require('http').Server(app)
 
-const io = require('socket.io')(http)
+const io = require('socket.io')(http, {
+    cors: {
+        origin: "http://localhost:3000",  // Allow requests from this origin
+        methods: ["GET", "POST"]
+    }
+});
 
-// io.on('connection', socket => {
-//     console.log(`Client connected: ${socket.id}`)
-//     socket.on('message', data => {
-//         console.log(`Received message: ${data}`)
-//     })
-// })
+io.on('connection', socket => {
+    console.log(`Client connected: ${socket.id}`)
+    socket.on('message', data => {
+        console.log(`Received message: ${data}`)
+    })
+})
 
 http.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
@@ -42,7 +47,8 @@ app.post('/blogs', (req, res) => {
     const blog = {title, author, content}
     blogs.push(blog)
     io.emit('NewBlog', blog)
-    // res.redirect('/blogs')
+    res.redirect('/blogs')
+    // res.json({ success: true });
 })
 
 app.get('/blogs/create', (req, res) => {
