@@ -33,11 +33,9 @@
     <script>
         // Connect to the Socket.IO server
         const socket = io('http://192.168.0.7:3000')
-        console.log(socket)
         socket.on('NewBlog', (blog) => {
-            console.log('ENTERED')
             const blogList = document.getElementById('blog-list')
-            blogList.innerHTML +=
+            blogList.innerHTML += 
             `
                 <h2>Title:</h2>
                 ${blog.title}<br>
@@ -46,34 +44,6 @@
                 <h2>Content:</h2>
                 ${blog.content}<br>
             `
-            // socket.emit('NewBlogResponse', 'Successful')
         })
-
-        // document.getElementById("blogForm").addEventListener('submit', function(event) {
-        //     event.preventDefault()
-        //     const form = document.getElementById('blogForm')
-        //     const formData = new FormData(form)
-        //     console.log(formData)
-
-        //     for (const [key, value] of formData.entries()) {
-        //         console.log(`${key}: ${value}`);
-        //     }
-                
-        //     console.log(formData)
-        //     fetch('/blogs', {
-        //         method: 'POST',
-        //         body: formData
-        //     })
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         if (data.success) {
-        //             console.log('POST formData successful')
-        //         }
-        //     })
-        //     .catch(error => {
-        //         console.error('Error:', error)
-        //     })
-        // })
-
     </script>
 </html>

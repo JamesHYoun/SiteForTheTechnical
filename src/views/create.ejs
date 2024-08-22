@@ -14,8 +14,60 @@
             <label for="author:">Author:</label>
             <input type="text" name="author">
             <label for="content:">Content:</label>
-            <input type="text" name="content">
+            <input id="content" type="text" name="content">
             <button type="submit">Submit</button>
         </form>
     </body>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js" integrity="sha384-2huaZvOR9iDzHqslqwpR87isEmrfxqyWOF7hr7BY6KG0+hVKLoEXMPUJw3ynWuhO" crossorigin="anonymous"></script>
+    <script>
+        // Connect to the Socket.IO server
+        const content = document.getElementById('content')
+        const socket = io('http://192.168.0.7:3000')
+        content.addEventListener('keydown', event => {
+            socket.emit('writing', {
+                type: 'keydown',
+                content: content.value,
+                cursorPosition: content.selectionStart,
+            })
+        })
+        content.addEventListener('keyup', event => {
+            socket.emit('writing', {
+                type: 'keyup',
+                content: content.value,
+                cursorPosition: content.selectionStart
+            })
+        })
+        socket.on('writing', (data) => {
+            const cursorPosition = content.selectionStart  
+            const previousLength = content.value.length         
+            content.value = data.content
+            
+
+            // Three Issues: 
+            // First. In the beginning, if i type on one screen, the cursor doesn't follow on the other.
+            // Second. If I type at the start of one screen, the cursor of second screen automatically moves to end.
+            // Third. There is probably issue when both cursors are at the same position.
+
+            if (cursorPosition > data.cursorPosition) {
+                if (data.type === 'keydown' || cursorPosition === content.value.length) {
+                    console.log("ENTERED")
+                    const currentLength = content.value.length
+                    const lengthDifference = currentLength - previousLength
+                    console.log(content.selectionStart)
+                    content.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
+                }
+            } else {
+                content.setSelectionRange(cursorPosition, cursorPosition)
+            }
+
+            // if (data.type === 'keydown' && cursorPosition >= data.cursorPosition) {
+            //     console.log("ENTERED")
+            //     console.log(content.selectionStart)
+            //     content.setSelectionRange(cursorPosition + 1, cursorPosition + 1)
+            // } else {
+            //     content.setSelectionRange(cursorPosition, cursorPosition)
+            // }
+                   
+        })
+    </script>    
 </html>

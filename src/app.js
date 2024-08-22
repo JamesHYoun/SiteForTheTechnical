@@ -14,9 +14,11 @@ const io = require('socket.io')(http, {
 });
 
 io.on('connection', socket => {
-    console.log(`Client connected: ${socket.id}`)
     socket.on('message', data => {
         console.log(`Received message: ${data}`)
+    })
+    socket.on('writing', data => {
+        socket.broadcast.emit('writing', data)
     })
 })
 
@@ -40,13 +42,16 @@ app.get('/blogs', (req, res) => {
     res.render('blogs', {blogs})
 })
 
+app.get('/create', (req, res) => {
+    res.render('create')
+})
+
 app.post('/blogs', (req, res) => {
     const title = req.body.title
     const author = req.body.author
     const content = req.body.content
     const blog = {title, author, content}
     blogs.push(blog)
-    io.emit('NewBlog', blog)
     res.redirect('/blogs')
     // res.json({ success: true });
 })
