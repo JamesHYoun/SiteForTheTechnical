@@ -41,24 +41,49 @@
             const cursorPosition = content.selectionStart  
             const previousLength = content.value.length         
             content.value = data.content
-            
+            const currentLength = content.value.length
 
             // Three Issues: 
             // First. In the beginning, if i type on one screen, the cursor doesn't follow on the other.
             // Second. If I type at the start of one screen, the cursor of second screen automatically moves to end.
             // Third. There is probably issue when both cursors are at the same position.
 
-            if (cursorPosition > data.cursorPosition) {
-                if (data.type === 'keydown' || cursorPosition === content.value.length) {
-                    console.log("ENTERED")
-                    const currentLength = content.value.length
-                    const lengthDifference = currentLength - previousLength
-                    console.log(content.selectionStart)
-                    content.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
-                }
+            if (cursorPosition >= data.cursorPosition) {
+                const lengthDifference = currentLength - previousLength
+                console.log('entered')
+                // content.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
+                console.log(content.value)
+                content.setSelectionRange(1, 1)
+                console.log(content.selectionStart)
             } else {
                 content.setSelectionRange(cursorPosition, cursorPosition)
             }
+
+            // if (cursorPosition > data.cursorPosition) {
+            //     const lengthDifference = currentLength - previousLength
+            //     console.log(currentLength)
+            //     content.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
+            // } else if (cursorPosition == data.cursorPosition) {
+            //     const lengthDifference = currentLength - previousLength + 1
+            //     console.log('ENTERED')
+            //     console.log(lengthDifference)
+            //     content.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
+            //     console.log(content.selectionStart)
+            // } else {
+            //     content.setSelectionRange(cursorPosition, cursorPosition)
+            // }
+
+            // if (cursorPosition > data.cursorPosition) {
+            //     if (data.type === 'keydown' || cursorPosition === content.value.length) {
+            //         console.log("ENTERED")
+            //         const currentLength = content.value.length
+            //         const lengthDifference = currentLength - previousLength
+            //         console.log(content.selectionStart)
+            //         content.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
+            //     }
+            // } else {
+            //     content.setSelectionRange(cursorPosition, cursorPosition)
+            // }
 
             // if (data.type === 'keydown' && cursorPosition >= data.cursorPosition) {
             //     console.log("ENTERED")
