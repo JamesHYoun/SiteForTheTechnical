@@ -50,22 +50,10 @@
             content.value = data.content
             const currentLength = content.value.length
 
-            // Three Issues: 
-            // First. In the beginning, if i type on one screen, the cursor doesn't follow on the other.
-            // Second. If I type at the start of one screen, the cursor of second screen automatically moves to end.
-            // Third. There is probably issue when both cursors are at the same position.
-
             if (currentLength > previousLength && cursorPosition + 1 >= data.cursorPosition 
             || currentLength < previousLength && cursorPosition - 1 >= data.cursorPosition) {
-                console.log('entered')
-                console.log(content.value)
-                // ADD LOGIC ABOUT WHETHER IT'S KEYDOWN OR KEYUP
-                
                 const lengthDifference = currentLength - previousLength
                 content.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
-                
-                //content.setSelectionRange(1, 1)
-                console.log(content.selectionStart)
             } 
             else {
                 content.setSelectionRange(cursorPosition, cursorPosition)
