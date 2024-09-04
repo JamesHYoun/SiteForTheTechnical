@@ -6,7 +6,7 @@ const MyBlogs = () => {
     const [blogs, setBlogs] = useState([]);
 
     const fetchMyBlogs = async () => {
-        const response = await fetch('http://localhost:3000/my-blogs', {
+        const response = await fetch('http://localhost:3000/api/my-blogs', {
             method: 'GET', // Specify the method
             headers: {
                 'Content-Type': 'application/json', // Set the appropriate content type

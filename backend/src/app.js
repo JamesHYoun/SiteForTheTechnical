@@ -1,9 +1,10 @@
-const PORT = process.env.PORT
 const path = require('path')
 const cors = require('cors');
 const mongoose = require('mongoose')
 const { ObjectId } = require('mongodb');
 const Blog = require('./models/blogModel')
+
+const myBlogRoutes = require('./routes/myBlog')
 
 const express = require('express')
 const app = express()
@@ -21,6 +22,17 @@ app.use(cors({
 
 const http = require('http').Server(app)
 
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    // listen for requests
+    http.listen(process.env.PORT, () => {
+        console.log(`Connected to database. Server running on port ${process.env.PORT}`)
+    })
+  })
+  .catch((error) => {
+    console.log(error)
+  })
+
 const io = require('socket.io')(http, {
     cors: {
         origin: "http://localhost:3000",  // Allow requests from this origin
@@ -37,32 +49,16 @@ io.on('connection', socket => {
     })
 })
 
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    // listen for requests
-    http.listen(PORT, () => {
-        console.log(`Connected to database. Server running on port ${PORT}`)
-    })
-  })
-  .catch((error) => {
-    console.log(error)
-  })
-
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 
 app.use(express.static(process.cwd() + '/public'))
 app.use(express.urlencoded({extended: true}))
 
+app.use('/api/my-blogs', myBlogRoutes)
+
 app.get('/', (req, res) => {
     res.render('index')
-})
-
-app.get('/my-blogs', async (req, res) => {
-    const user_id = req.headers['user_id']
-    const blog = await Blog.find({ _id: new ObjectId(user_id) });
-    res.status(200).json(blog)
-    
 })
 
 let blogs = []
