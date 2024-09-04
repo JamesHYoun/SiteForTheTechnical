@@ -13,6 +13,9 @@ const MyBlogs = () => {
                 'user_id': '66d75d793bd05c79b28aa047'
             }
         })
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         console.log(response)
         const json = await response.json()
         console.log(json)

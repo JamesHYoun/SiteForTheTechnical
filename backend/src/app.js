@@ -2,12 +2,12 @@ const PORT = process.env.PORT
 const path = require('path')
 const cors = require('cors');
 const mongoose = require('mongoose')
+const { ObjectId } = require('mongodb');
 const Blog = require('./models/blogModel')
 
 const express = require('express')
 const app = express()
 
-app.use(cors());
 
 // Alternatively, configure CORS options for more control
 // app.use(cors({
@@ -59,11 +59,8 @@ app.get('/', (req, res) => {
 })
 
 app.get('/my-blogs', async (req, res) => {
-    console.log('Get Blogs')
     const user_id = req.headers['user_id']
-    console.log(user_id)
-    const blog = await Blog.find({user_id})
-    console.log('blog',blog)
+    const blog = await Blog.find({ _id: new ObjectId(user_id) });
     res.status(200).json(blog)
     
 })
