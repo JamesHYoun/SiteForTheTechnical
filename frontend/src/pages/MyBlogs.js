@@ -1,33 +1,41 @@
 import { useState, useEffect } from 'react'
 
 import BlogDetails from '../components/BlogDetails'
+import { useAuthContext } from '../hooks/useAuthContext'
+import { useBlogsContext } from '../hooks/useBlogsContext'
 
 const MyBlogs = () => {
-    const [blogs, setBlogs] = useState([]);
+    const { blogs, dispatch } = useBlogsContext()
+    const { user } = useAuthContext()
+    // POINT OF ERROR
+    // console.log(`${user.token}`)
 
     const fetchMyBlogs = async () => {
-        const response = await fetch('http://localhost:3000/api/my-blogs', {
+        const response = await fetch('/api/my-blogs', {
             method: 'GET', // Specify the method
             headers: {
                 'Content-Type': 'application/json', // Set the appropriate content type
-                'user_id': '66d75d793bd05c79b28aa047'
+                'Authorization': `Bearer ${user.token}`
             }
         })
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        console.log(response)
         const json = await response.json()
-        console.log(json)
-        setBlogs(json)
+        if (response.ok) {
+            dispatch({type: 'SET_BLOGS', payload: json})
+        }
     } 
     useEffect(() => {
-        fetchMyBlogs();
-    }, []); // Empty dependency array means this runs once when the component mounts
+        if (user) {
+            fetchMyBlogs()
+        }
+    }, [user]); // Empty dependency array means this runs once when the component mounts
     
     return (
-        <div>
-            <BlogDetails value={blogs}/>
+        <div className="home">
+            <div className="blogs">
+                {blogs && blogs.map((blog) => (
+                    <BlogDetails key={blog._id} blog={blog}/>
+                ))}
+            </div>
         </div>
     )
 }

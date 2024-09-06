@@ -1,11 +1,10 @@
-const BlogDetails = ({ value }) => {
-    console.log('REACHED BLOGDETAILS')
+const BlogDetails = ({ blog }) => {
     return (
         <div className="blog-details">
-            <p>{value.title}</p>
-            <h1>Some title</h1>
-            <h2>Some authro</h2>
-            <p>Some content</p>
+            <p></p>
+            <h1>{blog.title}</h1>
+            <h2>{blog.author}</h2>
+            <p>{blog.content}</p>
         </div>
     )
 }
