@@ -2,7 +2,6 @@ const jwt = require('jsonwebtoken')
 const User = require('../models/userModel')
 
 const requireAuth = async (req, res, next) => {
-    console.log('REACHED START OF REQUIREAUTH')
     // verify authentication
     const { authorization } = req.headers
     if (!authorization) {
@@ -17,7 +16,6 @@ const requireAuth = async (req, res, next) => {
         console.log(error)
         res.status(401).json({error: 'Request is not authorized'})
     }
-    console.log('REACHED END OF REQUIREAUTH')
 }
 
 module.exports = requireAuth

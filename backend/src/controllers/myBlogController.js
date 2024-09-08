@@ -8,8 +8,6 @@ const getMyBlogs = async (req, res) => {
 }
 
 const createMyBlog = async (req, res) => {
-    console.log('ENTERED')
-    console.log('createMyBlog', req.body)
     try {
         const user_id = req.user._id
         const blog = await Blog.create({...req.body, user_id})

@@ -4,8 +4,9 @@ const mongoose = require('mongoose')
 const { ObjectId } = require('mongodb');
 const Blog = require('./models/blogModel')
 
-const myBlogRoutes = require('./routes/myBlog')
 const userRoutes = require('./routes/user')
+const blogRoutes = require('./routes/blog')
+const myBlogRoutes = require('./routes/myBlog')
 
 const express = require('express')
 const app = express()
@@ -58,7 +59,10 @@ app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(process.cwd() + '/public'))
 app.use(express.urlencoded({extended: true}))
 
+
 app.use('/api/user', userRoutes)
+
+app.use('/api/blogs', blogRoutes)
 
 app.use('/api/my-blogs', myBlogRoutes)
 

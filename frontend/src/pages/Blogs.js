@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react'
 
 import BlogDetails from '../components/BlogDetails'
 import { useAuthContext } from '../hooks/useAuthContext'
-import { useMyBlogsContext } from '../hooks/useMyBlogsContext'
+import { useBlogsContext } from '../hooks/useBlogsContext'
 
-const MyBlogs = () => {
-    const { myBlogs, dispatch } = useMyBlogsContext()
+const Blogs = () => {
+    const { blogs, dispatch } = useBlogsContext()
     const { user } = useAuthContext()
     // POINT OF ERROR
     // console.log(`${user.token}`)
     useEffect(() => {
         const fetchMyBlogs = async () => {
-            const response = await fetch('/api/my-blogs', {
+            const response = await fetch('/api/blogs', {
                 method: 'GET', // Specify the method
                 headers: {
                     'Content-Type': 'application/json', // Set the appropriate content type
@@ -31,7 +31,7 @@ const MyBlogs = () => {
     return (
         <div className="home">
             <div className="blogs">
-                {myBlogs && myBlogs.map((blog) => (
+                {blogs && blogs.map((blog) => (
                     <BlogDetails key={blog._id} blog={blog}/>
                 ))}
             </div>
@@ -39,4 +39,4 @@ const MyBlogs = () => {
     )
 }
 
-export default MyBlogs
+export default Blogs
