@@ -8,6 +8,12 @@ const getMyBlogs = async (req, res) => {
     res.status(200).json(blogs)
 }
 
+const getMyBlog = async (req, res) => {
+    const { id } = req.params
+    const blogs = await Blog.findById(id)
+    res.status(200).json(blogs)
+}
+
 const createMyBlog = async (req, res) => {
     try {
         const user_id = req.user._id
@@ -19,23 +25,31 @@ const createMyBlog = async (req, res) => {
 }
 
 const deleteMyBlog = async (req, res) => {
+    const user_id = req.user._id
     const { id } = req.params
   
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(404).json({error: 'No such blog'})
     }
-  
-    const blog = await Blog.findOneAndDelete({_id: id})
-  
+
+    const blog = await Blog.findOne({ _id: id })
+
     if (!blog) {
-      return res.status(400).json({error: 'No such blog'})
+        return res.status(400).json({error: 'No such blog'})
+      }
+
+    if (blog.user_id.toString() !== user_id.toString()) {
+        console.log('user id and blog id mismatch')
+    } else {
+        await Blog.deleteOne({ _id: id });
     }
   
     res.status(200).json(blog)
-  }
+}
 
 module.exports = {
     getMyBlogs,
+    getMyBlog,
     createMyBlog,
     deleteMyBlog
 }

@@ -39,19 +39,63 @@ mongoose.connect(process.env.MONGO_URI)
 
 const io = require('socket.io')(http, {
     cors: {
-        origin: "http://localhost:3000",  // Allow requests from this origin
+        origin: "*",  // Allow requests from this origin
         methods: ["GET", "POST"]
     }
 });
 
-io.on('connection', socket => {
+io.on("connection", (socket) => {
+    // Assume that the blog ID is passed by the client upon connection or via some event
+    socket.on("joinRoom", (blogId) => {
+      // The blog ID will be the room name
+      socket.join(blogId);
+    });
     socket.on('message', data => {
         console.log(`Received message: ${data}`)
     })
-    socket.on('writing', data => {
-        socket.broadcast.emit('writing', data)
-    })
-})
+    socket.on("writing", (data) => {
+        const roomId = data.blog_id;
+        const message = data.message;
+        
+        // Broadcast the message to all clients in the room (excluding the sender)
+        socket.to(roomId).emit('message', message);
+    });
+
+    socket.on('requestData', (roomId) => {
+        const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
+        
+        if (clientsInRoom && clientsInRoom.size > 0) {
+            // Convert Set to an array to access randomly
+            const clientArray = Array.from(clientsInRoom);
+            
+            // Pick a random client
+            const randomIndex = Math.floor(Math.random() * clientArray.length);
+            const randomClientId = clientArray[randomIndex];
+            
+            // Ask the chosen client to send data
+            io.to(randomClientId).emit('sendData', {
+                requesterId: socket.id
+            });
+            
+        } else {
+            io.to(randomClientId).emit('noClient');
+        }
+
+    });
+
+    // Handle other clients sending their data back
+    socket.on('sendData', (data) => {
+        const { requesterId, yourData } = data;
+
+        // Forward the data to the original requester (Client A)
+        io.to(requesterId).emit('receiveData', { yourData });
+    });
+
+    // Optionally handle disconnection
+    socket.on("disconnect", () => {
+      console.log(`Socket ${socket.id} disconnected`);
+    });
+});
 
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))

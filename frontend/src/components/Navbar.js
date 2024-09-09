@@ -20,7 +20,7 @@ const Navbar = () => {
                 <Link to="/my-blogs">
                     <h2>My Blogs</h2>
                 </Link>
-                <Link to="/create">
+                <Link to="/my-blogs/create">
                     <h2>Create</h2>
                 </Link>
                 <nav>
