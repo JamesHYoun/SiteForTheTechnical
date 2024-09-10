@@ -48,47 +48,49 @@ io.on("connection", (socket) => {
     // Assume that the blog ID is passed by the client upon connection or via some event
     socket.on("joinRoom", (blogId) => {
       // The blog ID will be the room name
+
       socket.join(blogId);
+      console.log('Joined room')
     });
     socket.on('message', data => {
         console.log(`Received message: ${data}`)
     })
     socket.on("writing", (data) => {
-        const roomId = data.blog_id;
+        const roomId = data.blogId;
         const message = data.message;
         
         // Broadcast the message to all clients in the room (excluding the sender)
         socket.to(roomId).emit('message', message);
     });
 
-    socket.on('requestData', (roomId) => {
-        const clientsInRoom = io.sockets.adapter.rooms.get(roomId);
+    socket.on('requestData', ({blogId, socketId}) => {
+        const clientsInRoom = io.sockets.adapter.rooms.get(blogId);
         
-        if (clientsInRoom && clientsInRoom.size > 0) {
-            // Convert Set to an array to access randomly
-            const clientArray = Array.from(clientsInRoom);
+        if (clientsInRoom && clientsInRoom.size > 1) {
             
-            // Pick a random client
+            // Convert Set to an array to access randomly
+            clientsInRoom.delete(socketId)
+            const clientArray = Array.from(clientsInRoom);
             const randomIndex = Math.floor(Math.random() * clientArray.length);
             const randomClientId = clientArray[randomIndex];
-            
-            // Ask the chosen client to send data
+
+            clientsInRoom.add(socketId)
+                // Ask the chosen client to send data
             io.to(randomClientId).emit('sendData', {
-                requesterId: socket.id
+                requesterId: socketId,
             });
-            
         } else {
-            io.to(randomClientId).emit('noClient');
+            io.to(socketId).emit('noClient');
         }
 
     });
 
     // Handle other clients sending their data back
     socket.on('sendData', (data) => {
-        const { requesterId, yourData } = data;
+        const { requesterId, content } = data;
 
         // Forward the data to the original requester (Client A)
-        io.to(requesterId).emit('receiveData', { yourData });
+        io.to(requesterId).emit('receiveData', { content });
     });
 
     // Optionally handle disconnection
