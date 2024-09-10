@@ -24,6 +24,25 @@ const createMyBlog = async (req, res) => {
     }
 }
 
+const updateMyBlog = async (req, res) => {
+    try {
+        const { id } = req.params
+        const user_id = req.user._id
+        const blog = await Blog.findOneAndUpdate(
+            { _id: id },               // Filter to find the document
+            { 
+                title: req.body.title,
+                author: req.body.author,
+                content: req.body.content
+            },
+            { new: true }        // Return the updated document
+        )
+        res.status(200).json(blog)
+    } catch (error) {
+        res.status(400).json({error: error.message})
+    }
+}
+
 const deleteMyBlog = async (req, res) => {
     const user_id = req.user._id
     const { id } = req.params
@@ -51,5 +70,6 @@ module.exports = {
     getMyBlogs,
     getMyBlog,
     createMyBlog,
+    updateMyBlog,
     deleteMyBlog
 }

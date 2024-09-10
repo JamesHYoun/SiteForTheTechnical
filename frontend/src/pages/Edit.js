@@ -18,6 +18,27 @@ const Edit = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        const fetchMyBlogs = async () => {
+            const response = await fetch('/api/my-blogs', {
+                method: 'GET', // Specify the method
+                headers: {
+                    'Content-Type': 'application/json', // Set the appropriate content type
+                    'Authorization': `Bearer ${user.token}`
+                }
+            })
+            const json = await response.json()
+            if (response.ok) {
+                dispatch({type: 'SET_BLOGS', payload: json})
+            }
+        } 
+        if (user) {
+            fetchMyBlogs()
+        }
+    }, [user]); // Empty dependency array means this runs once when the component mounts
+
+    useEffect(() => {
+        const titleRef = document.getElementById('title')
+        const authorRef = document.getElementById('author')
         const contentRef = document.getElementById('content')
 
         const socket = io('http://192.168.0.7:3000')
@@ -31,6 +52,10 @@ const Edit = () => {
             socket.emit("joinRoom", blogId)
             socket.emit('requestData', { blogId, socketId: socket.id })
             socket.on('receiveData', (data) => {
+                setTitle(data.title)
+                titleRef.value = data.title
+                setAuthor(data.author)
+                authorRef.value = data.author
                 setContent(data.content)
                 contentRef.value = data.content
                 // Do something with the received data
@@ -45,12 +70,15 @@ const Edit = () => {
             // Send the data back to the server to forward to the requester
             socket.emit('sendData', {
                 requesterId: requesterId,
+                title: titleRef.value,
+                author: authorRef.value,
                 content: contentRef.value
             });
         });
         socket.on('noClient', () => {
+            console.log('ENTERED noClient')
             const fetchMyBlogs = async () => {
-                const response = await fetch('/api/my-blogs', {
+                const response = await fetch('/api/my-blogs/' + blogId, {
                     method: 'GET', // Specify the method
                     headers: {
                         'Content-Type': 'application/json', // Set the appropriate content type
@@ -58,55 +86,101 @@ const Edit = () => {
                     }
                 })
                 const json = await response.json()
-                if (response.ok) {
-                    dispatch({type: 'SET_BLOGS', payload: json})
-                }
+                setTitle(json.title)
+                setAuthor(json.author)
+                setContent(json.content)
             } 
             if (user) {
                 fetchMyBlogs()
             }
         });
+        titleRef.addEventListener('input', event => {
+            socket.emit('writing', {
+                blogId: blogId,
+                message: {
+                    type: 'input,title',
+                    title: titleRef.value,
+                    cursorPositionTitle: titleRef.selectionStart,
+                }
+
+            })
+        })
+        authorRef.addEventListener('input', event => {
+            socket.emit('writing', {
+                blogId: blogId,
+                message: {
+                    type: 'input,author',
+                    author: authorRef.value,
+                    cursorPositionAuthor: authorRef.selectionStart,
+                }
+
+            })
+        })
         contentRef.addEventListener('input', event => {
             socket.emit('writing', {
                 blogId: blogId,
                 message: {
-                    type: 'input',
+                    type: 'input,content',
                     content: contentRef.value,
-                    cursorPosition: contentRef.selectionStart
+                    cursorPositionContent: contentRef.selectionStart,
                 }
 
             })
         })
         socket.on('message', (data) => {
-            console.log('content: ', content)
-            // const contentRef = document.getElementById('content')
-            const cursorPosition = contentRef.selectionStart
-            const previousLength = contentRef.value.length        
-            setContent(data.content)
-            contentRef.value = data.content
-            const currentLength = contentRef.value.length
-    
-            if (currentLength > previousLength && cursorPosition + 1 >= data.cursorPosition 
-            || currentLength < previousLength && cursorPosition - 1 >= data.cursorPosition) {
-                const lengthDifference = currentLength - previousLength
-                contentRef.setSelectionRange(cursorPosition + lengthDifference, cursorPosition + lengthDifference)
-            } 
-            else {
-                contentRef.setSelectionRange(cursorPosition, cursorPosition)
-            } 
+            const types = data.type.split(',')
+            if (types[1] === 'title') {
+                const cursorPositionTitle = titleRef.selectionStart
+                const previousLengthTitle = titleRef.value.length 
+                setTitle(data.title)
+                titleRef.value = data.title  
+                const currentLengthTitle = titleRef.value.length
+                if (currentLengthTitle > previousLengthTitle && cursorPositionTitle + 1 >= data.cursorPositionTitle 
+                || currentLengthTitle < previousLengthTitle && cursorPositionTitle - 1 >= data.cursorPositionTitle) {
+                    const lengthDifference = currentLengthTitle - previousLengthTitle
+                    titleRef.setSelectionRange(cursorPositionTitle + lengthDifference, cursorPositionTitle + lengthDifference)
+                } 
+                else {
+                    titleRef.setSelectionRange(cursorPositionTitle, cursorPositionTitle)
+                } 
+            }
+            else if (types[1] === 'author') {
+                const cursorPositionAuthor = authorRef.selectionStart
+                const previousLengthAuthor = authorRef.value.length 
+                setAuthor(data.author)
+                authorRef.value = data.author  
+                const currentLengthAuthor = authorRef.value.length
+                if (currentLengthAuthor > previousLengthAuthor && cursorPositionAuthor + 1 >= data.cursorPositionAuthor 
+                || currentLengthAuthor < previousLengthAuthor && cursorPositionAuthor - 1 >= data.cursorPositionAuthor) {
+                    const lengthDifference = currentLengthAuthor - previousLengthAuthor
+                    authorRef.setSelectionRange(cursorPositionAuthor + lengthDifference, cursorPositionAuthor + lengthDifference)
+                } 
+                else {
+                    authorRef.setSelectionRange(cursorPositionAuthor, cursorPositionAuthor)
+                } 
+            }
+            else if (types[1] === 'content') {
+                const cursorPositionContent = contentRef.selectionStart
+                const previousLengthContent = contentRef.value.length 
+                setContent(data.content)
+                contentRef.value = data.content
+                const currentLengthContent = contentRef.value.length
+                if (currentLengthContent > previousLengthContent && cursorPositionContent + 1 >= data.cursorPositionContent 
+                || currentLengthContent < previousLengthContent && cursorPositionContent - 1 >= data.cursorPositionContent) {
+                    const lengthDifference = currentLengthContent - previousLengthContent
+                    contentRef.setSelectionRange(cursorPositionContent + lengthDifference, cursorPositionContent + lengthDifference)
+                } 
+                else {
+                    contentRef.setSelectionRange(cursorPositionContent, cursorPositionContent)
+                } 
+            }
         })
-        
-
         return () => {
             console.log('Disconnecting socket...')
             socket.disconnect()
         }
     }, [user, blogId])
 
-
-
-
-    
     const handleSubmit = async (e) => {
         e.preventDefault()
         if (!user) {
@@ -114,8 +188,8 @@ const Edit = () => {
             return
         }
         const blog = {title, author, content}
-        const response = await fetch('/api/my-blogs', {
-            method: 'POST',
+        const response = await fetch('/api/my-blogs/' + blogId, {
+            method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${user.token}`,
                 'Content-Type': 'application/json'
@@ -126,11 +200,8 @@ const Edit = () => {
         if (!response.ok) {
             setError(json.error)
         } else {
-            setTitle('')
-            setAuthor('')
-            setContent('')
             setError(null)
-            dispatch({type: 'CREATE_BLOG', payload: json})
+            dispatch({type: 'UPDATE_BLOG', payload: json})
             console.log('new blog added')
         }
     }
@@ -140,12 +211,14 @@ const Edit = () => {
             <h3>Add a new blog</h3>
             <label>Title:</label>
             <input
+                id="title"
                 type="text"
                 onChange={(e) => setTitle(e.target.value)}
                 value={title}
             />
             <label>Author:</label>
             <input
+                id="author"
                 type="text"
                 onChange={(e) => setAuthor(e.target.value)}
                 value={author}
@@ -154,8 +227,7 @@ const Edit = () => {
             <input
                 id="content"
                 type="text"
-                onChange={(e) => {
-                    console.log('e content: ', e.target.value); setContent(e.target.value)}}
+                onChange={(e) => { setContent(e.target.value)}}
                 value={content}
             />
             <button>Save</button>

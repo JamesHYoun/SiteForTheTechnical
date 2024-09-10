@@ -87,10 +87,10 @@ io.on("connection", (socket) => {
 
     // Handle other clients sending their data back
     socket.on('sendData', (data) => {
-        const { requesterId, content } = data;
+        const { requesterId, title, author, content } = data;
 
         // Forward the data to the original requester (Client A)
-        io.to(requesterId).emit('receiveData', { content });
+        io.to(requesterId).emit('receiveData', { title, author, content });
     });
 
     // Optionally handle disconnection
