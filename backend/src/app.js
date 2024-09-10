@@ -69,12 +69,12 @@ io.on("connection", (socket) => {
         if (clientsInRoom && clientsInRoom.size > 1) {
             
             // Convert Set to an array to access randomly
-            clientsInRoom.delete(socketId)
-            const clientArray = Array.from(clientsInRoom);
+            let copySet = new Set(clientsInRoom)
+            copySet.delete(socketId)
+            const clientArray = Array.from(copySet);
             const randomIndex = Math.floor(Math.random() * clientArray.length);
             const randomClientId = clientArray[randomIndex];
-
-            clientsInRoom.add(socketId)
+            copySet.add(socketId)
                 // Ask the chosen client to send data
             io.to(randomClientId).emit('sendData', {
                 requesterId: socketId,
