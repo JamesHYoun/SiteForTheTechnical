@@ -20,7 +20,7 @@ const Edit = () => {
     useEffect(() => {
         const contentRef = document.getElementById('content')
 
-        const socket = io('http://localhost:3000')
+        const socket = io('http://192.168.0.7:3000')
         // io.on("connection", (socket) => {
         //     socket.emit("joinRoom", blogId)
         //     socket.on("joinRoom", (blogId) => {
@@ -83,6 +83,7 @@ const Edit = () => {
             const cursorPosition = contentRef.selectionStart
             const previousLength = contentRef.value.length        
             setContent(data.content)
+            contentRef.value = data.content
             const currentLength = contentRef.value.length
     
             if (currentLength > previousLength && cursorPosition + 1 >= data.cursorPosition 
