@@ -21,7 +21,7 @@ app.use(express.json());
 //   allowedHeaders: ['Content-Type', 'Authorization'] // Allow specific headers
 // }));
 app.use(cors({
-    origin: 'http://localhost:3001' // React app's URL
+    origin: '*' // React app's URL
 }));
 
 const http = require('http').Server(app)
